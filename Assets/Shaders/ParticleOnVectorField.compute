@@ -1,0 +1,70 @@
+﻿#pragma kernel VectorFieldMain
+#pragma kernel ParticleMain
+
+#define NUM_THREAD_X 4*4*4
+#define NUM_THREAD_Y 1
+#define NUM_THREAD_Z 1
+
+#include "UnityCG.cginc"
+
+struct VectorField {
+    float3 position;
+    float3 direction;
+    float dirScalar;
+};
+
+struct Particle {
+    float3 velocity;
+    float3 position;
+    float4 color;
+    float scale;
+};
+
+RWStructuredBuffer<VectorField> _VectorFieldDataBuffer;
+RWStructuredBuffer<Particle> _ParticleDataBuffer;
+
+float _DeltaTime;
+
+[numthreads(NUM_THREAD_X, 1, 1)]
+void VectorFieldMain (
+    uint3 id : SV_DispatchThreadID,
+    uint3 groupID: SV_GroupID,
+    uint3 groupThreadID: SV_GroupThreadID,
+    uint groupIndex: SV_GROUPINDEX
+    )
+{
+    uint bufferIndex = id.x;
+    VectorField vf = _VectorFieldDataBuffer[bufferIndex];
+    // vf.dirScalar = sqrt(dot(vf.direction, vf.direction));
+    // float fixedTime = _Time.y * timeScale;
+    // float3 noiseSeed = float3(cubicPos.x, cubicPos.y, cubicPos.z) * noiseScale;
+    // float noiseXY = snoise(float3(noiseSeed.xy, fixedTime));
+    // float noiseXZ = snoise(float3(noiseSeed.xz, fixedTime));
+    // float angleXY = -PI + noiseXY * TWO_PI;
+    // float angleXZ = -PI + noiseXZ * TWO_PI;
+    // float dirX = sin(angleXY) * cos(angleXZ);
+    // float dirY = sin(angleXY) * sin(angleXZ);
+    // float dirZ = cos(angleXY);
+    // force.direction = float3(dirX, dirY, dirZ);
+    _VectorFieldDataBuffer[bufferIndex] = vf;
+}
+
+[numthreads(NUM_THREAD_X,1,1)]
+void ParticleMain (uint3 id : SV_DispatchThreadID)
+{
+    int index = id.x;
+    Particle p = _ParticleDataBuffer[index];
+
+    for (int i = 0; i < NUM_THREAD_X; i++) {
+        VectorField vf = _VectorFieldDataBuffer[i];
+        float3 dir = p.position - vf.position;
+        float dist = sqrt(dot(dir, dir));
+
+        if (dist > 0.0 && dist <= 1.0) {
+            p.velocity += vf.direction * vf.dirScalar * 0.1 * _DeltaTime;
+            p.position += p.velocity * _DeltaTime;
+        }
+    }
+
+    _ParticleDataBuffer[index] = p;
+}
