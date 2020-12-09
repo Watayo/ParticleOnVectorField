@@ -20,9 +20,17 @@ public class ComputeShaderScript : MonoBehaviour {
     }
 
     #region Grid
-    private int X_GRID = 4;
-    private int Y_GRID = 4;
-    private int Z_GRID = 4;
+    private int X_GRID = 8;
+    private int Y_GRID = 8;
+    private int Z_GRID = 8;
+    #endregion
+    private int X_THREAD = 8*8*8;
+    private int Y_THREAD = 1;
+    private int Z_THREAD = 1;
+    #region XYZ_THREAD
+
+
+
     #endregion
 
     #region ComputeShader & Buffer
@@ -35,6 +43,7 @@ public class ComputeShaderScript : MonoBehaviour {
     #region Particle Parameter
     [SerializeField] private int _ParticleCount = 0;
     [SerializeField] private Color _ParticleColor = Color.blue;
+    [SerializeField] public Vector3 DebugDir = new Vector3(1, 0, 0);
     #endregion
 
     #region Accessors
@@ -95,14 +104,17 @@ public class ComputeShaderScript : MonoBehaviour {
     void Update() {
         ComputeShader cs = _cs;
         int VectorFieldKernel = cs.FindKernel("VectorFieldMain");
+        Debug.Log(VectorFieldKernel);
         cs.SetBuffer(VectorFieldKernel, "_VectorFieldDataBuffer", _VectorFieldDataBuffer);
-        cs.Dispatch(VectorFieldKernel, 1, 1, 1);
+        cs.SetFloat("_DeltaTime", Time.deltaTime);
+        cs.SetFloat("_FrameCount", Time.frameCount);
+        cs.Dispatch(VectorFieldKernel, GetGridNum()/X_THREAD, 1, 1);
 
         int ParticleKernel = cs.FindKernel("ParticleMain");
         cs.SetBuffer(ParticleKernel, "_VectorFieldDataBuffer", _VectorFieldDataBuffer);
         cs.SetBuffer(ParticleKernel, "_ParticleDataBuffer", _ParticleDataBuffer);
         cs.SetFloat("_DeltaTime", Time.deltaTime);
-        cs.Dispatch(ParticleKernel, _ParticleCount/(GetGridNum()), 1, 1);
+        cs.Dispatch(ParticleKernel, _ParticleCount/X_THREAD, 1, 1);
     }
 
     /// <summary>
@@ -144,7 +156,7 @@ public class ComputeShaderScript : MonoBehaviour {
         for (int i = 0; i < _ParticleCount; i++) {
             particles[i] = new ParticleData {
                 velocity = new Vector3(0.0f, 0.0f, 0.0f),
-                position = Random.onUnitSphere * 1.2f,
+                position = Random.onUnitSphere * 1.1f,
                 color = _ParticleColor,
                 scale = 0.02f,
             };

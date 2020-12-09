@@ -1,11 +1,14 @@
 ﻿#pragma kernel VectorFieldMain
 #pragma kernel ParticleMain
 
-#define NUM_THREAD_X 4*4*4
+#define NUM_THREAD_X 8*8*8
 #define NUM_THREAD_Y 1
 #define NUM_THREAD_Z 1
-
+#define PI 3.14159265
+#define TWO_PI PI*2
 #include "UnityCG.cginc"
+#include "Noise.cginc"
+#include "NoiseMath.cginc"
 
 struct VectorField {
     float3 position;
@@ -24,6 +27,7 @@ RWStructuredBuffer<VectorField> _VectorFieldDataBuffer;
 RWStructuredBuffer<Particle> _ParticleDataBuffer;
 
 float _DeltaTime;
+float _FrameCount;
 
 [numthreads(NUM_THREAD_X, 1, 1)]
 void VectorFieldMain (
@@ -33,19 +37,15 @@ void VectorFieldMain (
     uint groupIndex: SV_GROUPINDEX
     )
 {
+
+
     uint bufferIndex = id.x;
     VectorField vf = _VectorFieldDataBuffer[bufferIndex];
-    // vf.dirScalar = sqrt(dot(vf.direction, vf.direction));
-    // float fixedTime = _Time.y * timeScale;
-    // float3 noiseSeed = float3(cubicPos.x, cubicPos.y, cubicPos.z) * noiseScale;
-    // float noiseXY = snoise(float3(noiseSeed.xy, fixedTime));
-    // float noiseXZ = snoise(float3(noiseSeed.xz, fixedTime));
-    // float angleXY = -PI + noiseXY * TWO_PI;
-    // float angleXZ = -PI + noiseXZ * TWO_PI;
-    // float dirX = sin(angleXY) * cos(angleXZ);
-    // float dirY = sin(angleXY) * sin(angleXZ);
-    // float dirZ = cos(angleXY);
-    // force.direction = float3(dirX, dirY, dirZ);
+
+    float3 noiseSeed = vf.position * 0.05;
+    float fc = _FrameCount * 0.05;
+    vf.direction = Pnoise(noiseSeed * fc);
+    vf.dirScalar = 0.1*sqrt(dot(vf.direction, vf.direction));
     _VectorFieldDataBuffer[bufferIndex] = vf;
 }
 
@@ -61,7 +61,7 @@ void ParticleMain (uint3 id : SV_DispatchThreadID)
         float dist = sqrt(dot(dir, dir));
 
         if (dist > 0.0 && dist <= 1.0) {
-            p.velocity += vf.direction * vf.dirScalar * 0.1 * _DeltaTime;
+            p.velocity += vf.direction * vf.dirScalar * 0.05 * _DeltaTime;
             p.position += p.velocity * _DeltaTime;
         }
     }
