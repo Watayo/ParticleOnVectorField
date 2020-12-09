@@ -289,8 +289,8 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 963194225}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 1, z: -10}
+  m_LocalRotation: {x: 0.26232833, y: 0.36980635, z: -0.109674156, w: 0.8845331}
+  m_LocalPosition: {x: -7.9249125, y: 5.554278, z: -8.328196}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
@@ -342,7 +342,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _cs: {fileID: 7200000, guid: db47c581e06564531948a2c49ee900a4, type: 3}
-  _ParticleCount: 16384
+  _ParticleCount: 32768
   _ParticleColor: {r: 0.5990566, g: 0.5990566, b: 1, a: 1}
   DebugDir: {x: 1, y: 0, z: 0}
 --- !u!114 &1510263237
@@ -352,12 +352,12 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1510263234}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 9549e471ac5424dd6968eca2be2d7e22, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  ObjectScale: {x: 0.1, y: 2, z: 0.1}
+  ObjectScale: {x: 0.1, y: 1, z: 0.1}
   csScript: {fileID: 1510263236}
   InstanceMesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
   InstanceRenderMaterial: {fileID: 2100000, guid: 42b6e28c347114c509fb2ccd8c1ace3d,

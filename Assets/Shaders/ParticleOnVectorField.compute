@@ -43,9 +43,9 @@ void VectorFieldMain (
     VectorField vf = _VectorFieldDataBuffer[bufferIndex];
 
     float3 noiseSeed = vf.position * 0.05;
-    float fc = _FrameCount * 0.05;
+    float fc = _FrameCount * 0.04;
     vf.direction = Pnoise(noiseSeed * fc);
-    vf.dirScalar = 0.1*sqrt(dot(vf.direction, vf.direction));
+    vf.dirScalar = sqrt(dot(vf.direction, vf.direction));
     _VectorFieldDataBuffer[bufferIndex] = vf;
 }
 

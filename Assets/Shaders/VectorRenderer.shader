@@ -35,6 +35,7 @@
 		// データの構造体バッファ
 		StructuredBuffer<VectorData> _VectorFieldDataBuffer;
 		#endif
+		float3 _ObjectScale;
 
 		sampler2D _MainTex; // テクスチャ
 
@@ -42,11 +43,8 @@
 		half   _Metallic;   // 金属特性
 		fixed4 _Color;      // カラー
 
-		float3 _ObjectScale;
-
 		static const float PI = 3.14159265f;
     static const float DEG2RAD = PI/180.f;
-
 
 		float4 AngleAxis(float aAngle, float3 aAxis)
  		{

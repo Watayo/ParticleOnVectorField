@@ -104,7 +104,6 @@ public class ComputeShaderScript : MonoBehaviour {
     void Update() {
         ComputeShader cs = _cs;
         int VectorFieldKernel = cs.FindKernel("VectorFieldMain");
-        Debug.Log(VectorFieldKernel);
         cs.SetBuffer(VectorFieldKernel, "_VectorFieldDataBuffer", _VectorFieldDataBuffer);
         cs.SetFloat("_DeltaTime", Time.deltaTime);
         cs.SetFloat("_FrameCount", Time.frameCount);
